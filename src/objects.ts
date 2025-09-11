@@ -5,12 +5,28 @@ import { Question, QuestionType } from "./interfaces/question";
  * `expected` should be empty strings, the `options` should be an empty list, the `points`
  * should default to 1, and `published` should default to false.
  */
+
+function createCopy(question: Question): Question {
+    let questionCopy = { ...question };
+    questionCopy.options = [...question.options];
+    return questionCopy;
+}
+
 export function makeBlankQuestion(
     id: number,
     name: string,
-    type: QuestionType
+    type: QuestionType,
 ): Question {
-    return {};
+    return {
+        id: id,
+        name: name,
+        type: type,
+        body: "",
+        expected: "",
+        options: [],
+        points: 1,
+        published: false,
+    };
 }
 
 /**
@@ -21,7 +37,13 @@ export function makeBlankQuestion(
  * HINT: Look up the `trim` and `toLowerCase` functions.
  */
 export function isCorrect(question: Question, answer: string): boolean {
-    return false;
+    let questionCopy: Question = createCopy(question);
+    return (
+            questionCopy.expected.toLowerCase().trim() ===
+                answer.toLowerCase().trim()
+        ) ?
+            true
+        :   false;
 }
 
 /**
@@ -31,7 +53,12 @@ export function isCorrect(question: Question, answer: string): boolean {
  * be exactly one of the options.
  */
 export function isValid(question: Question, answer: string): boolean {
-    return false;
+    return (
+            question.type !== "multiple_choice_question" ||
+                question.options.includes(answer)
+        ) ?
+            true
+        :   false;
 }
 
 /**
@@ -41,7 +68,12 @@ export function isValid(question: Question, answer: string): boolean {
  * name "My First Question" would become "9: My First Q".
  */
 export function toShortForm(question: Question): string {
-    return "";
+    let questionCopy: Question = createCopy(question);
+    let representation: string =
+        question.name.length > 10 ?
+            `${questionCopy.id}: ${questionCopy.name.slice(0, 10)}`
+        :   `${questionCopy.id}: ${questionCopy.name}`;
+    return representation;
 }
 
 /**
@@ -62,7 +94,12 @@ export function toShortForm(question: Question): string {
  * Check the unit tests for more examples of what this looks like!
  */
 export function toMarkdown(question: Question): string {
-    return "";
+    let questionCopy: Question = createCopy(question);
+    let markDown: string = `# ${questionCopy.name}\n${questionCopy.body}`;
+    if (questionCopy.type === "multiple_choice_question") {
+        markDown += `\n- ${questionCopy.options.join("\n- ")}`;
+    }
+    return markDown;
 }
 
 /**
@@ -70,7 +107,9 @@ export function toMarkdown(question: Question): string {
  * `newName`.
  */
 export function renameQuestion(question: Question, newName: string): Question {
-    return question;
+    let questionCopy: Question = createCopy(question);
+    questionCopy.name = newName;
+    return questionCopy;
 }
 
 /**
@@ -79,7 +118,11 @@ export function renameQuestion(question: Question, newName: string): Question {
  * published; if it was published, now it should be not published.
  */
 export function publishQuestion(question: Question): Question {
-    return question;
+    let questionCopy: Question = createCopy(question);
+    questionCopy.published ?
+        (questionCopy.published = false)
+    :   (questionCopy.published = true);
+    return questionCopy;
 }
 
 /**
@@ -89,7 +132,11 @@ export function publishQuestion(question: Question): Question {
  * The `published` field should be reset to false.
  */
 export function duplicateQuestion(id: number, oldQuestion: Question): Question {
-    return oldQuestion;
+    let questionCopy: Question = createCopy(oldQuestion);
+    questionCopy.name = `Copy of ${questionCopy.name}`;
+    questionCopy.published = false;
+    questionCopy.id = id;
+    return questionCopy;
 }
 
 /**
@@ -100,7 +147,9 @@ export function duplicateQuestion(id: number, oldQuestion: Question): Question {
  * Check out the subsection about "Nested Fields" for more information.
  */
 export function addOption(question: Question, newOption: string): Question {
-    return question;
+    let questionCopy: Question = createCopy(question);
+    questionCopy.options.push(newOption);
+    return questionCopy;
 }
 
 /**
@@ -115,7 +164,17 @@ export function mergeQuestion(
     id: number,
     name: string,
     contentQuestion: Question,
-    { points }: { points: number }
+    { points }: { points: number },
 ): Question {
-    return contentQuestion;
+    let questionCopy: Question = {
+        id: id,
+        name: name,
+        body: contentQuestion.body,
+        type: contentQuestion.type,
+        options: [...contentQuestion.options],
+        expected: contentQuestion.expected,
+        points,
+        published: false,
+    };
+    return questionCopy;
 }
