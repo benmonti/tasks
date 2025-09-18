@@ -20,3 +20,9 @@ export interface Question {
     /** Whether or not this question is ready to display to students */
     published: boolean;
 }
+
+export function createCopy(question: Question): Question {
+    let questionCopy: Question = { ...question };
+    questionCopy.options = [...question.options];
+    return questionCopy;
+}

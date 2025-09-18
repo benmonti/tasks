@@ -1,5 +1,6 @@
 import { Answer } from "./interfaces/answer";
 import { Question, QuestionType, createCopy } from "./interfaces/question";
+import { duplicateQuestion, makeBlankQuestion } from "./objects";
 
 /**
  * Consumes an array of questions and returns a new array with only the questions
@@ -7,7 +8,7 @@ import { Question, QuestionType, createCopy } from "./interfaces/question";
  */
 export function getPublishedQuestions(questions: Question[]): Question[] {
     let newQuestions: Question[] = questions.reduce(
-        (accumulator: Question[], question: Question) => {
+        (accumulator: Question[], question: Question): Question[] => {
             if (question.published) accumulator.push(createCopy(question));
             return accumulator;
         },
@@ -23,10 +24,10 @@ export function getPublishedQuestions(questions: Question[]): Question[] {
  */
 export function getNonEmptyQuestions(questions: Question[]): Question[] {
     let newQuestions: Question[] = questions.reduce(
-        (accumulator: Question[], question: Question) => {
+        (accumulator: Question[], question: Question): Question[] => {
             if (
-                question.body !== "" &&
-                question.expected !== "" &&
+                question.body !== "" ||
+                question.expected !== "" ||
                 question.options.length !== 0
             ) {
                 let questionCopy: Question = createCopy(question);
@@ -47,7 +48,10 @@ export function findQuestion(
     questions: Question[],
     id: number,
 ): Question | null {
-    return null;
+    let foundQuestion: Question | undefined = questions.find(
+        (question: Question): boolean => question.id === id,
+    );
+    return foundQuestion === undefined ? null : foundQuestion;
 }
 
 /**
@@ -55,7 +59,14 @@ export function findQuestion(
  * with the given `id`.
  */
 export function removeQuestion(questions: Question[], id: number): Question[] {
-    return [];
+    let newQuestions: Question[] = questions.reduce(
+        (accumulator: Question[], question: Question): Question[] => {
+            if (question.id !== id) accumulator.push(createCopy(question));
+            return accumulator;
+        },
+        [],
+    );
+    return newQuestions;
 }
 
 /***
@@ -63,21 +74,36 @@ export function removeQuestion(questions: Question[], id: number): Question[] {
  * questions, as an array.
  */
 export function getNames(questions: Question[]): string[] {
-    return [];
+    let questionNames: string[] = questions.map(
+        (question: Question): string => question.name,
+    );
+    return questionNames;
 }
 
 /***
  * Consumes an array of questions and returns the sum total of all their points added together.
  */
 export function sumPoints(questions: Question[]): number {
-    return 0;
+    let pointsSum: number = questions.reduce(
+        (accumulator: number, question: Question): number =>
+            (accumulator += question.points),
+        0,
+    );
+    return pointsSum;
 }
 
 /***
  * Consumes an array of questions and returns the sum total of the PUBLISHED questions.
  */
 export function sumPublishedPoints(questions: Question[]): number {
-    return 0;
+    let sumOfPublishedPoints: number = questions.reduce(
+        (accumulator: number, question: Question): number =>
+            question.published ?
+                (accumulator += question.points)
+            :   (accumulator += 0),
+        0,
+    );
+    return sumOfPublishedPoints;
 }
 
 /***
@@ -98,7 +124,15 @@ id,name,options,points,published
  * Check the unit tests for more examples!
  */
 export function toCSV(questions: Question[]): string {
-    return "";
+    let CSVRepresentation: string = questions.reduce(
+        (csvAccumulator: string, question: Question): string => {
+            if (question.id !== questions[0].id) csvAccumulator += "\n";
+            csvAccumulator += `${question.id},${question.name},${question.options.length},${question.points},${question.published}`;
+            return csvAccumulator;
+        },
+        "id,name,options,points,published\n",
+    );
+    return CSVRepresentation;
 }
 
 /**
@@ -107,7 +141,15 @@ export function toCSV(questions: Question[]): string {
  * making the `text` an empty string, and using false for both `submitted` and `correct`.
  */
 export function makeAnswers(questions: Question[]): Answer[] {
-    return [];
+    let answers: Answer[] = questions.map((question: Question): Answer => {
+        return {
+            questionId: question.id,
+            text: "",
+            submitted: false,
+            correct: false,
+        };
+    });
+    return answers;
 }
 
 /***
@@ -115,7 +157,16 @@ export function makeAnswers(questions: Question[]): Answer[] {
  * each question is now published, regardless of its previous published status.
  */
 export function publishAll(questions: Question[]): Question[] {
-    return [];
+    let allPublished: Question[] = questions.reduce(
+        (newArr: Question[], question: Question): Question[] => {
+            let publishedQuestion: Question = createCopy(question);
+            publishedQuestion.published = true;
+            newArr.push(publishedQuestion);
+            return newArr;
+        },
+        [],
+    );
+    return allPublished;
 }
 
 /***
@@ -123,7 +174,14 @@ export function publishAll(questions: Question[]): Question[] {
  * are the same type. They can be any type, as long as they are all the SAME type.
  */
 export function sameType(questions: Question[]): boolean {
-    return false;
+    let firstQuestionType: string = "";
+    if (questions.length > 0) {
+        firstQuestionType = questions[0].type;
+    }
+    let allSameType: boolean = questions.every(
+        (question: Question): boolean => question.type === firstQuestionType,
+    );
+    return allSameType;
 }
 
 /***
@@ -137,7 +195,15 @@ export function addNewQuestion(
     name: string,
     type: QuestionType,
 ): Question[] {
-    return [];
+    let copyOfQuestions: Question[] = questions.reduce(
+        (newArr: Question[], question: Question): Question[] => {
+            newArr.push(createCopy(question));
+            return newArr;
+        },
+        [],
+    );
+    copyOfQuestions.push(makeBlankQuestion(id, name, type));
+    return copyOfQuestions;
 }
 
 /***
@@ -150,7 +216,18 @@ export function renameQuestionById(
     targetId: number,
     newName: string,
 ): Question[] {
-    return [];
+    let renamedQuestions: Question[] = questions.reduce(
+        (newArr: Question[], question: Question): Question[] => {
+            let modifiedQuestion: Question = createCopy(question);
+            if (question.id === targetId) {
+                modifiedQuestion.name = newName;
+            }
+            newArr.push(modifiedQuestion);
+            return newArr;
+        },
+        [],
+    );
+    return renamedQuestions;
 }
 
 /***
@@ -165,7 +242,20 @@ export function changeQuestionTypeById(
     targetId: number,
     newQuestionType: QuestionType,
 ): Question[] {
-    return [];
+    let modifiedQuestions: Question[] = questions.reduce(
+        (newArr: Question[], question: Question): Question[] => {
+            let modifiedQuestion: Question = createCopy(question);
+            if (question.id === targetId) {
+                modifiedQuestion.type = newQuestionType;
+                if (modifiedQuestion.type !== "multiple_choice_question")
+                    modifiedQuestion.options = [];
+            }
+            newArr.push(modifiedQuestion);
+            return newArr;
+        },
+        [],
+    );
+    return modifiedQuestions;
 }
 
 /**
@@ -178,13 +268,39 @@ export function changeQuestionTypeById(
  * Remember, if a function starts getting too complicated, think about how a helper function
  * can make it simpler! Break down complicated tasks into little pieces.
  */
+
+function insertOption(
+    question: Question,
+    targetOptionIndex: number,
+    newOption: string,
+): Question {
+    if (targetOptionIndex === -1) question.options.push(newOption);
+    else question.options[targetOptionIndex] = newOption;
+    return question;
+}
+
 export function editOption(
     questions: Question[],
     targetId: number,
     targetOptionIndex: number,
     newOption: string,
 ): Question[] {
-    return [];
+    let modifiedQuestions: Question[] = questions.reduce(
+        (newArr: Question[], question: Question): Question[] => {
+            let modifiedQuestion: Question = createCopy(question);
+            if (question.id === targetId) {
+                modifiedQuestion = insertOption(
+                    modifiedQuestion,
+                    targetOptionIndex,
+                    newOption,
+                );
+            }
+            newArr.push(modifiedQuestion);
+            return newArr;
+        },
+        [],
+    );
+    return modifiedQuestions;
 }
 
 /***
@@ -198,5 +314,16 @@ export function duplicateQuestionInArray(
     targetId: number,
     newId: number,
 ): Question[] {
-    return [];
+    let newQuestions: Question[] = questions.reduce(
+        (newArr: Question[], question: Question): Question[] => {
+            if (question.id === targetId) {
+                let dupeQ: Question = duplicateQuestion(newId, question);
+                newArr.push(createCopy(question));
+                newArr.push(dupeQ);
+            } else newArr.push(createCopy(question));
+            return newArr;
+        },
+        [],
+    );
+    return newQuestions;
 }
