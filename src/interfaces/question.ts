@@ -1,6 +1,7 @@
 /** QuestionType influences how a question is asked and what kinds of answers are possible */
 export type QuestionType = "multiple_choice_question" | "short_answer_question";
 
+/** A representation of a Question in a quizzing application */
 export interface Question {
     /** A unique identifier for the question */
     id: number;
@@ -18,4 +19,10 @@ export interface Question {
     points: number;
     /** Whether or not this question is ready to display to students */
     published: boolean;
+}
+
+export function createCopy(question: Question): Question {
+    let questionCopy: Question = { ...question };
+    questionCopy.options = [...question.options];
+    return questionCopy;
 }
