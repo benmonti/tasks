@@ -14,10 +14,10 @@ describe("CycleHoliday Component tests", () => {
 
     test("(1 pts) There are two buttons", () => {
         const alphabetButton = screen.getByRole("button", {
-            name: /Alphabet/i
+            name: /Alphabet/i,
         });
         const yearButton = screen.getByRole("button", {
-            name: /Year/i
+            name: /Year/i,
         });
         expect(alphabetButton).toBeInTheDocument();
         expect(yearButton).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe("CycleHoliday Component tests", () => {
 
     test("(1 pts) Can cycle through 5 distinct holidays alphabetically", async () => {
         const alphabetButton = screen.getByRole("button", {
-            name: /Alphabet/i
+            name: /Alphabet/i,
         });
         const initialHoliday = screen.getByText(/Holiday ?[:)-](.*)/i);
         const states: string[] = [];
@@ -42,7 +42,7 @@ describe("CycleHoliday Component tests", () => {
 
     test("(1 pts) Can cycle through 5 distinct holidays by year", async () => {
         const yearButton = screen.getByRole("button", {
-            name: /Year/i
+            name: /Year/i,
         });
         const initialHoliday = screen.getByText(/Holiday ?[:)-](.*)/i);
         const states: string[] = [];

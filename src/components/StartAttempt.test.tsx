@@ -54,7 +54,7 @@ describe("StartAttempt Component tests", () => {
     });
     test("(1 pts) There is an initially enabled Mulligan button", () => {
         const mulliganButton = screen.getByRole("button", {
-            name: /Mulligan/i
+            name: /Mulligan/i,
         });
         expect(mulliganButton).toBeInTheDocument();
         expect(mulliganButton).toBeEnabled();
@@ -63,7 +63,7 @@ describe("StartAttempt Component tests", () => {
         const attemptNumber: number =
             extractDigits(screen.getByText(/(\d+)/)) || 0;
         const mulliganButton = screen.getByRole("button", {
-            name: /Mulligan/i
+            name: /Mulligan/i,
         });
         await act(async () => {
             mulliganButton.click();
@@ -75,7 +75,7 @@ describe("StartAttempt Component tests", () => {
         const attemptNumber: number =
             extractDigits(screen.getByText(/(\d+)/)) || 0;
         const mulliganButton = screen.getByRole("button", {
-            name: /Mulligan/i
+            name: /Mulligan/i,
         });
         await act(async () => {
             mulliganButton.click();
@@ -90,7 +90,7 @@ describe("StartAttempt Component tests", () => {
         const attemptNumber: number =
             extractDigits(screen.getByText(/(\d+)/)) || 0;
         const startButton = screen.getByRole("button", {
-            name: /Start Quiz/i
+            name: /Start Quiz/i,
         });
         await act(async () => {
             startButton.click();
@@ -102,11 +102,11 @@ describe("StartAttempt Component tests", () => {
     test("(1 pts) Clicking Start Quiz changes enabled buttons", async () => {
         // Given the buttons...
         const startButton = screen.getByRole("button", {
-            name: /Start Quiz/i
+            name: /Start Quiz/i,
         });
         const stopButton = screen.getByRole("button", { name: /Stop Quiz/i });
         const mulliganButton = screen.getByRole("button", {
-            name: /Mulligan/i
+            name: /Mulligan/i,
         });
         // When the start button is clicked
         await act(async () => {
@@ -120,11 +120,11 @@ describe("StartAttempt Component tests", () => {
     test("(1 pts) Clicking Start and Stop Quiz changes enabled buttons", async () => {
         // Given the buttons and initial attempt number...
         const startButton = screen.getByRole("button", {
-            name: /Start Quiz/i
+            name: /Start Quiz/i,
         });
         const stopButton = screen.getByRole("button", { name: /Stop Quiz/i });
         const mulliganButton = screen.getByRole("button", {
-            name: /Mulligan/i
+            name: /Mulligan/i,
         });
         // When we click the start button and then the stop button
         await act(async () => {
@@ -141,11 +141,11 @@ describe("StartAttempt Component tests", () => {
     test("(1 pts) Clicking Start, Stop, Mulligan sets attempts to original", async () => {
         // Given the buttons and initial attempt number...
         const startButton = screen.getByRole("button", {
-            name: /Start Quiz/i
+            name: /Start Quiz/i,
         });
         const stopButton = screen.getByRole("button", { name: /Stop Quiz/i });
         const mulliganButton = screen.getByRole("button", {
-            name: /Mulligan/i
+            name: /Mulligan/i,
         });
         const attemptNumber: number =
             extractDigits(screen.getByText(/(\d+)/)) || 0;
@@ -172,11 +172,11 @@ describe("StartAttempt Component tests", () => {
     test("(1 pts) Cannot click start quiz when out of attempts", async () => {
         // Given the buttons and initial attempt number...
         const startButton = screen.getByRole("button", {
-            name: /Start Quiz/i
+            name: /Start Quiz/i,
         });
         const stopButton = screen.getByRole("button", { name: /Stop Quiz/i });
         const mulliganButton = screen.getByRole("button", {
-            name: /Mulligan/i
+            name: /Mulligan/i,
         });
         let attemptNumber = extractDigits(screen.getByText(/(\d+)/)) || 0;
         const initialAttempt = attemptNumber;
